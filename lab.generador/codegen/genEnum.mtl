@@ -1,0 +1,48 @@
+[comment encoding = UTF-8 /]
+[module genEnum('http://www.eclipse.org/uml2/5.0.0/UML')] 
+
+[template public generate(enum : Enumeration)]
+[comment @main /]
+[generateEnum(enum)/]
+[/template]
+
+[template public generateEnum(enum : Enumeration)]
+
+[file ('/src/main/java/' + enum._package.qualifiedName.replaceAll('::', '/') +'/modelo/enums/'+ enum.name + '.java', false, 'UTF-8')]
+package [enum._package.qualifiedName.replaceAll('::', '.')/].modelo.enums;
+
+/**
+  *  @generated
+  *  @author [enum._package.eAnnotations.details->select(a: ecore::EStringToStringMapEntry|a.key='author').value/]
+  */
+public enum  [enum.name/]  {
+	[if (not enum.ownedLiteral->isEmpty())][for (lit : EnumerationLiteral | enum.ownedLiteral) 
+	separator(',')][lit.name/][lit.getNameEnumLiteral().trim()/]
+   		[/for];//, OTRO(),....;
+	[/if]
+   private final String name; // internal
+   private final int id; // internal
+    [enum.name/](String name,int id) {   
+        this.name = name;
+        this.id = id;
+}
+	[enum.name/](String name) {   
+        this.name = name;
+        this.id = -1;
+}
+
+	public String getName() {
+		return this.name;
+	}
+	public int getId() {
+		return this.id;
+	}
+}
+[/file]
+[/template]
+[template private getNameEnumLiteral(lit : EnumerationLiteral)]
+	[if (lit.eAllContents(OpaqueExpression)._body.toString() <> 'invalid' 
+and lit.eAllContents(OpaqueExpression)._body.toString()->notEmpty())]([lit.eAllContents(OpaqueExpression)._body.toString()/])[else]
+	("[lit.name/]")
+	[/if]
+[/template]

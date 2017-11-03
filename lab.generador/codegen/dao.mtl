@@ -1,0 +1,124 @@
+[module dao('http://www.eclipse.org/uml2/4.0.0/UML')/]
+
+[template public generate(c : Class)]
+[comment @main/]
+[generateDAO(c)/]
+[/template]
+
+[template public generateDAO(c : Class)]
+[file ('/src/main/java/' + c._package.qualifiedName.replaceAll('::', '/') +'/dao/'+ c.name + 'DAO.java', false, 'UTF-8')]
+package [c._package.qualifiedName.replaceAll('::', '.')/].dao;
+
+import [c._package.qualifiedName.replaceAll('::', '.')/].modelo.entity.*;
+import java.util.List;
+import java.util.ArrayList;
+import javax.persistence.*;
+import javax.ejb.Stateless;
+
+/**
+  *  @generated
+  *  @author [c._package.eAnnotations.details->select(a: ecore::EStringToStringMapEntry|a.key='author').value/]
+  */
+[c.classHeader()/] {
+	@PersistenceContext
+    private EntityManager em;
+
+	[c.getAll()/]
+	[c.getID()/]
+	[c.insert()/]
+	[c.delete()/]
+	[c.update()/]
+	
+}
+[/file]
+[/template]
+
+
+[template public classHeader(c : Class)]
+@Stateless
+[c.visibility/] class [c.name/]DAO[c.extendsHeader()/][c.implementsHeader()/]
+[/template]
+
+[template public extendsHeader(c : Class) ? (c.superClass->notEmpty())]
+ extends [c.superClass.name/]
+[/template]
+
+[template public implementsHeader(c : Class) ? (c.interfaceRealization->notEmpty())]
+ implements [c.interfaceRealization.supplier.name->sep(', ')/]
+[/template]
+
+[template public getAll(a : Class)]
+
+/**
+* @generated
+*/
+public List<[a.name/]> obtenerTodos(){
+	return em.createNamedQuery("[a.name/].obtenerTodos").getResultList();
+}
+
+/**
+* retorna una lista con los [a.name/] que se encuentran en la base de datos
+* @return retorna una lista de [a.name/]
+* @generated
+*/
+public List<[a.name/]> obtenerTodos(Integer startPosition,Integer maxResult){
+
+TypedQuery<[a.name/]> findAllQuery = em
+				.createQuery(
+						"SELECT DISTINCT o FROM [a.name/] o ORDER BY o.id",
+						[a.name/].class);
+		if (startPosition != null) {
+			findAllQuery.setFirstResult(startPosition);
+		}
+		if (maxResult != null) {
+			findAllQuery.setMaxResults(maxResult);
+		}
+		//final List<Oferta> results = findAllQuery.getResultList();
+	return findAllQuery.getResultList();
+}
+[/template]
+
+[template public getID(a : Class)]
+
+/**
+* @generated
+*/
+public [a.name/] obtener(Long id){
+	return em.find([a.name/].class, id);
+}
+
+[/template]
+
+[template public insert(a : Class)]
+
+/**
+* @generated
+*/
+public [a.name/] guardar([a.name/] entidad){
+	em.persist(entidad);
+	return entidad;
+}
+
+[/template]
+
+[template public update(a : Class)]
+
+/**
+* @generated
+*/
+public void actualizar([a.name/] entidad){
+	em.merge(entidad);
+}
+
+[/template]
+
+[template public delete(a : Class)]
+
+/**
+* @generated
+*/
+public void borrar(Long id){
+	em.remove(em.find([a.name/].class, id));
+}
+
+[/template]
