@@ -125,7 +125,7 @@ public Response guardar[a.name/]([a.name/] entity){
        servicio.guardar(entity);
     }
 return Response.created(
-				UriBuilder.fromResource([a.name/].class)
+				UriBuilder.fromResource([a.name/]REST.class)
 						.path(String.valueOf(entity.getId())).build()).build();
 }
 
